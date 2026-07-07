@@ -8,15 +8,10 @@ pipeline {
             }
         }
 
-        stage('Verify Maven') {
+        stage('Environment Check') {
             steps {
-                sh 'mvn -version'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'mvn clean package'
+                sh 'git --version'
+                sh 'java -version'
             }
         }
     }
