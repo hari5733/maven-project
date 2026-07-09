@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "hari1366/maven-project:${BUILD_NUMBER}"
+        LATEST_IMAGE = "hari1366/maven-project:latest"
     }
 
     stages {
@@ -21,7 +22,10 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh '''
+                docker build -t $IMAGE_NAME .
+                docker tag $IMAGE_NAME $LATEST_IMAGE
+                '''
             }
         }
 
@@ -34,10 +38,22 @@ pipeline {
                 )]) {
                     sh '''
                     echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
                     docker push $IMAGE_NAME
+                    docker push $LATEST_IMAGE
+
                     docker logout
                     '''
                 }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                kubectl rollout restart deployment maven-project
+                kubectl rollout status deployment/maven-project
+                '''
             }
         }
     }
@@ -49,6 +65,10 @@ pipeline {
 
         failure {
             echo "Pipeline failed!"
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
