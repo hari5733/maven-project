@@ -2,18 +2,25 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: maven-project
+  labels:
+    app: maven-project
+
 spec:
   replicas: 2
+
   selector:
     matchLabels:
       app: maven-project
+
   template:
     metadata:
       labels:
         app: maven-project
+
     spec:
       containers:
       - name: maven-project
         image: hari1366/maven-project:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
