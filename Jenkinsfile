@@ -47,15 +47,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Deploy') {
-            steps {
-                sh '''
-                kubectl rollout restart deployment maven-project
-                kubectl rollout status deployment/maven-project
-                '''
-            }
-        }
     }
 
     post {
